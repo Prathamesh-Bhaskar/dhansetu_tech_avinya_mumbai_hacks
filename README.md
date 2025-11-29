@@ -141,7 +141,7 @@ Our architecture is designed with scalability, security, and real-time processin
 
 ### Screenshots
 
-![Auto-transaction Tracking](assets/screenshot1.png) ![Hyper-Personalized AI](assets/screenshot2.png) ![Multilingual Assistant](assets/screenshot3.png) ![Income Forecasting](assets/screenshot4.png)
+![Auto-transaction Tracking](assets/screenshot1.png) ![Hyper-Personalized AI](assets/screenshot2.png) ![Multilingual Assistant](assets/screenshot3.png) 
 
 ---
 

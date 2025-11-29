@@ -90,7 +90,7 @@ Support for both personal and family financial goals with progress tracking and 
 
 ## System Architecture
 
-![System Architecture](assets/Technical_architecture.png)
+![System Architecture]
 
 Our architecture is designed with scalability, security, and real-time processing in mind. The system consists of:
 

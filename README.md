@@ -1,7 +1,7 @@
 # DhanSetu
 ### Financial Stability Platform for India's Gig Workers
 
-**Team**: Tech Avinya  <p> <img src="https://img.shields.io/badge/🥇%206x%20National%20Hackathon%20Winner-orange?style=for-the-badge" /> </p>
+**Team**: Tech Avinya  <p> <img src="https://img.shields.io/badge/🥇%207x%20National%20Champion-FF6B35?style=for-the-badge" /> </p>
 **Hackathon**: Mumbai Hacks  
 **Track**: Fintech (Main Track)  
 **Location**: Mumbai

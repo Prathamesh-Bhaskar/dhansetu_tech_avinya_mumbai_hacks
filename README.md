@@ -1,163 +1,185 @@
+# DhanSetu
+### Financial Stability Platform for India's Gig Workers
 
-# Dhanasetu — Financial Advisor for Gig Workers
+**Team**: Tech Avinya  <p> <img src="https://img.shields.io/badge/🥇%206x%20National%20Hackathon%20Winner-orange?style=for-the-badge" /> </p>
+**Hackathon**: Mumbai Hacks  
+**Track**: Fintech (Main Track)  
+**Location**: Mumbai
 
-Completed:  
-[████████████████████  ] 95–97% 
-
-Dhanasetu is a privacy-first fintech prototype built to support India’s daily-earning workforce with clear, actionable financial intelligence. Built for MumbaiHacks 2025 by Team Tech Avinya, this project demonstrates how non-PII signals and simple AI logic can help gig workers (auto-rickshaw drivers, delivery partners, etc.) improve savings, avoid shortfalls, and make better financial decisions in their local language.
-
----
-
-## Quick Links
-
-- Pitch Deck (Canva / PDF): https://www.canva.com/design/DAG6BSwrLwo/j5JZ5m-jxa8s8RTI21LClw/view?utm_content=DAG6BSwrLwo&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hec5194b6b3
-- Demo / Screenshots: shown below
-- Built for: MumbaiHacks 2025 — Official Submission
+### Project Status
+```
+████████████████████████████████████████████████░░░░  95% Complete
+```
+**Status**: Production Ready | Final Testing Phase
 
 ---
 
-## Problem (Short)
-
-Gig workers often earn irregular daily incomes with limited access to reliable, low-cost financial guidance. Lack of financial literacy and limited, privacy-safe tools make it hard for them to plan, save, or avoid short-term cash shortfalls.
-
----
-
-## Solution (Short)
-
-Dhanasetu transforms non-PII earning and expense signals into straightforward insights and regional-language guidance. The system predicts likely shortfalls, flags risk patterns, and offers simple, personalized recommendations — all while avoiding collection of personally identifiable information.
-
----
-
-## Features / Highlights
-
-- Privacy-first: uses non-PII financial signals only
-- Shortfall prediction and alerts
-- Simple regional-language guidance tailored to income behavior
-- Lightweight ML/heuristic engine suitable for low-bandwidth/mobile scenarios
-- Modular architecture for future integrations (Account Aggregator, auto-invest SIP, etc.)
+## Table of Contents
+- [Problem Statement](#problem-statement)
+- [Our Solution](#our-solution)
+- [Key Features](#key-features)
+- [System Architecture](#system-architecture)
+- [Team](#team)
+- [Technology Stack](#technology-stack)
+- [Demo](#demo)
 
 ---
 
-## Screenshots & Pitch Deck
+## Problem Statement
 
-We include the pitch deck (Canva/PDF) and inline prototype screenshots for quick viewing. Replace the placeholder images below with your actual screenshot files (recommended names shown). Once the images are committed to the repository, GitHub will render them inline.
+India's **7.1 million auto-rickshaw drivers**, part of a **23.7 million gig-worker economy**, remain largely excluded from formal financial growth because they lack affordable guidance and the tools needed to build stability.
 
-Pitch Deck (Canva / PDF)
-- View online: https://www.canva.com/design/DAG6BSwrLwo/j5JZ5m-jxa8s8RTI21LClw/view?utm_content=DAG6BSwrLwo&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hec5194b6b3
+### The Three Core Challenges
 
-Prototype Screenshots (replace these with your actual images)
-- Dashboard View  
-  ![Dashboard View](./screenshots/dashboard.png)
+**Volatile Cashflow**  
+Daily earnings fluctuate unpredictably, making traditional budgeting impossible for gig workers who operate on daily income cycles rather than monthly salaries.
 
-- Financial Insights  
-  ![Financial Insights](./screenshots/insights.png)
+**Financial Illiteracy**  
+Limited access to financial education and tools designed for their unique earning patterns leaves gig workers vulnerable to poor financial decisions and economic instability.
 
-- Guidance Screen  
-  ![Guidance Screen](./screenshots/guidance.png)
-
-- Shortfall Alert  
-  ![Shortfall Alert](./screenshots/shortfall_alert.png)
-
-Notes:
-- If you prefer direct links to images hosted elsewhere (Canva export or an image CDN), you can replace the ./screenshots/*.png paths with external URLs.
-- To add or update images: commit them to /screenshots with the names above, or change the paths in this README to match the filenames you commit.
+**No Affordable Financial Advisor**  
+Traditional financial advisory services are expensive and designed for salaried individuals, not for workers with daily cashflows and micro-transaction patterns.
 
 ---
 
-## Architecture Overview
+## Our Solution
 
-1. Non-PII Data Ingestion
-   - Collects earnings/expense patterns without user identifiers.
+**DhanSetu** (धनसेतु - "Bridge to Wealth") gives India's gig workforce a way to understand and manage their finances, turning scattered earning patterns into clear, personalized guidance. From auto-rickshaw drivers to delivery workers, we predict shortfalls, identify risks, and provide tailored suggestions in the user's own language.
 
-2. Financial Pattern Engine
-   - Detects irregular income, spending rhythm, and risk signals.
+### Solution Pillars
 
-3. AI Recommendation Module
-   - Generates simple, personalized guidance using local-language templates.
+**Hyper-Personalized AI Application**  
+Advanced machine learning algorithms that adapt to individual earning and spending patterns, providing context-aware financial guidance.
 
-4. Regional-Language Delivery Layer
-   - Presents advice in the user’s familiar language and tone.
+**Financial Advisor**  
+AI-powered advisory system that acts as a personal financial coach, accessible 24/7 without the cost of traditional financial services.
 
-5. Future Integrations (modular)
-   - Account Aggregator (AA) support
-   - Auto-Invest SIP engine
-   - Smart financial automation (rule-based transfers, nudges)
+**Multilingual Accessibility**  
+Support for Hindi and regional languages, ensuring financial guidance is delivered in terms and languages that resonate with users.
 
-System architecture diagram: add or replace with your diagram at `/docs/system-architecture.png`.
+---
+
+## Key Features
+
+### Auto-Transaction Tracking + Data Privacy
+Automatic SMS-based transaction monitoring that captures income and expenses in real-time while maintaining strict data privacy standards. All financial data is processed using non-PII signals.
+
+### Hyper-Personalized AI
+Context-aware alerts and recommendations including:
+- Safe-to-spend calculations based on historical patterns
+- High goal contribution alerts to balance savings with daily needs
+- Intelligent budgeting that adapts to income volatility
+- Weekly and daily spending insights
+
+### Multilingual AI Assistant
+Natural language financial guidance available in the user's preferred language, making complex financial concepts accessible and actionable.
+
+### Income Forecasting
+Predictive analytics that help workers anticipate:
+- Weekly and monthly income patterns
+- Seasonal fluctuations
+- Festival and surge demand periods
+- Lean periods requiring additional planning
+
+### Goal Tracking
+Support for both personal and family financial goals with progress tracking and intelligent contribution recommendations.
+
+---
+
+## System Architecture
+
+![System Architecture](assets/Technical_architecture.png)
+
+Our architecture is designed with scalability, security, and real-time processing in mind. The system consists of:
+
+- **Mobile Application Layer**: React Native app for cross-platform compatibility
+- **API Gateway**: Secure REST APIs for communication between frontend and backend
+- **AI/ML Processing Engine**: Real-time analysis and personalized recommendations
+- **Data Processing Pipeline**: SMS parsing, transaction categorization, and pattern recognition
+- **Database Layer**: PostgreSQL for structured data, Redis for caching
+- **Security Layer**: End-to-end encryption and privacy-first data handling
 
 ---
 
 ## Team
 
-Team Tech Avinya — Built for MumbaiHacks 2025
+**Team Tech Avinya** 
 
-- <Member Name> — AI / ML
-- <Member Name> — Mobile / Android
-- <Member Name> — Cybersecurity / Backend
-- <Member Name> — Business / Operations
-- <Member Name> — QA / Testing
+| Name | Role | Expertise |
+|------|------|-----------|
+| Pradeep Misal | Business Analyst | Market research, business strategy, and financial modeling |
+| Sandesh Khilari | AI Developer | Machine learning, predictive analytics, and AI model development |
+| Ganesh Ghadge | Security Engineer | Data privacy, encryption, and secure system architecture |
+| Prathmesh Bhaskar | AI Developer | Natural language processing, multilingual AI, and user experience |
 
-(Replace placeholders with actual names and roles.)
-
----
-
-## Repository Structure
-
-- /backend        — Backend services, APIs, ML inference
-- /frontend       — Mobile or web UI code
-- /ml             — Model training, notebooks, data processing
-- /docs           — Design docs, diagrams, deck
-- /screenshots    — Prototype visual files (images used above)
+### Our Achievements
+- **7+ Hackathon Wins** across national and international competitions
+- **Multidisciplinary Expertise** spanning fintech, AI/ML, healthcare, social impact, and more
+- **Proven Track Record** of executing complex technical projects with excellence
+- **Strong Collaboration** in building innovative solutions for real-world problems
 
 ---
 
-## Local Setup
+## Technology Stack
 
-1. Clone the repo:
-```bash
-git clone https://github.com/Prathamesh-Bhaskar/dhansetu_tech_avinya_mumbai_hacks.git
-cd dhansetu_tech_avinya_mumbai_hacks
-```
-
-2. Python backend (example):
-```bash
-# optionally create a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-pip install -r requirements.txt
-```
-
-3. Docker (if using containers):
-```bash
-docker compose up --build
-```
-
-4. Frontend:
-- Follow the README in `/frontend` (install node modules, run dev server). Update instructions here when frontend details are available.
-
-Note: Update these steps to reflect the actual stack/tooling if different (node, expo, flutter, etc.).
+**Mobile**: React Native  
+**Backend**: Node.js, Express  
+**Database**: PostgreSQL, Redis  
+**AI/ML**: TensorFlow, scikit-learn, Python  
+**NLP**: Custom multilingual models for Hindi and regional languages  
+**Cloud**: AWS / Google Cloud Platform  
+**Security**: End-to-end encryption, secure SMS parsing  
+**Analytics**: Custom forecasting algorithms, time-series analysis
 
 ---
 
-## How to Contribute
-
-- Add issues for bugs or features
-- Fork the repository and create a branch per feature
-- Open pull requests describing your changes and tests
-- Add screenshots and improve documentation in `/docs` and `/screenshots`
+## Demo
 
 ---
 
-## Vision
+### Screenshots
 
-Dhanasetu aims to become a trusted, privacy-first financial companion for India's gig workforce — providing clarity, stability, and long-term financial growth through simple, accessible intelligence.
+![Auto-transaction Tracking](assets/screenshot1.png) ![Hyper-Personalized AI](assets/screenshot2.png) ![Multilingual Assistant](assets/screenshot3.png) ![Income Forecasting](assets/screenshot4.png)
+
+---
+
+## Privacy and Security
+
+DhanSetu prioritizes user privacy through:
+- Processing only non-PII financial signals
+- Local SMS parsing with no cloud storage of message content
+- End-to-end encryption for all financial data
+- No sharing of user data with third parties
+- Compliance with Indian data protection regulations
+
+---
+
+## Hackathon Submission
+
+**Event**: Mumbai Hacks  
+**Track**: Fintech (Main Track)  
+**Location**: Mumbai  
+**Date**: November 2024  
+**Project Completion**: 95%
 
 ---
 
 ## Contact
 
-Team Tech Avinya  
-Project lead: <insert contact>  
-Repository: https://github.com/Prathamesh-Bhaskar/dhansetu_tech_avinya_mumbai_hacks
-```
+**Team Tech Avinya**  
+Email: techavinya01@gmail.com  
+LinkedIn: [Avinya](https://www.linkedin.com/in/tech-avinya-a4b45a291?utm_source=share_via&utm_content=profile&utm_medium=member_android)
+
+---
+
+## Acknowledgments
+
+Built with the belief that every worker deserves financial dignity and the tools to achieve it.
+
+**धनसेतु** - Building bridges to financial stability, one day at a time.
+
+This project addresses a critical gap in financial inclusion for India's 23.7 million gig workers, starting with 7.1 million auto-rickshaw drivers who form the backbone of urban transportation but remain excluded from formal financial growth.
+
+---
+
+**Made in Mumbai** | Team Tech Avinya | Mumbai Hacks 2024

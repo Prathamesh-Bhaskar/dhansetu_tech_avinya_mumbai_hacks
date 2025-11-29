@@ -1,0 +1,84 @@
+{
+    "userId": "test-user-123",
+    "expenses": [
+        {
+            "id": "1",
+            "user_id": "test-user-123",
+            "category": "food",
+            "amount": 5000,
+            "merchant": "Restaurant",
+            "date": "2025-11-25",
+            "notes": "Dinner"
+        },
+        {
+            "id": "2",
+            "user_id": "test-user-123",
+            "category": "transport",
+            "amount": 2000,
+            "merchant": "Uber",
+            "date": "2025-11-26",
+            "notes": "Cab fare"
+        },
+        {
+            "id": "3",
+            "user_id": "test-user-123",
+            "category": "shopping",
+            "amount": 8000,
+            "merchant": "Amazon",
+            "date": "2025-11-27",
+            "notes": "Electronics"
+        }
+    ],
+    "incomes": [
+        {
+            "id": "1",
+            "user_id": "test-user-123",
+            "source": "Salary",
+            "amount": 50000,
+            "date": "2025-11-01",
+            "notes": "Monthly salary"
+        }
+    ],
+    "goals": [
+        {
+            "id": "1",
+            "user_id": "test-user-123",
+            "goal_name": "Emergency Fund",
+            "target_amount": 100000,
+            "saved_amount": 25000,
+            "deadline": "2025-12-31",
+            "status": "active",
+            "progress": 25
+        }
+    ],
+    "budgets": [
+        {
+            "budget": {
+                "id": "1",
+                "user_id": "test-user-123",
+                "category": "food",
+                "amount": 10000,
+                "month": 11,
+                "year": 2025
+            },
+            "spent": 8500,
+            "remaining": 1500,
+            "percentage": 85,
+            "status": "warning"
+        },
+        {
+            "budget": {
+                "id": "2",
+                "user_id": "test-user-123",
+                "category": "transport",
+                "amount": 5000,
+                "month": 11,
+                "year": 2025
+            },
+            "spent": 2000,
+            "remaining": 3000,
+            "percentage": 40,
+            "status": "safe"
+        }
+    ]
+}

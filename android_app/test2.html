@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DhanSetu - Intelligent Financial Planner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        'midnight': '#111827',       // Dark background
+                        'midnight-light': '#1F2937', // Lighter dark elements
+                        'electric-cyan': '#22D3EE',  // Primary Accent
+                        'neon-mint': '#34D399',      // Success
+                        'alert-red': '#F87171',      // Error
+                        'alert-yellow': '#FBBF24',   // Warning
+                        'surface-white': '#FFFFFF',
+                        'surface-off': '#F3F4F6',
+                        'text-main': '#111827',
+                        'text-muted': '#9CA3AF'
+                    },
+                    boxShadow: {
+                        'glow': '0 0 15px rgba(34, 211, 238, 0.3)',
+                        'sheet': '0 -10px 25px -5px rgba(0, 0, 0, 0.1)',
+                        'floating': '0 10px 30px -10px rgba(0, 0, 0, 0.3)'
+                    },
+                    borderRadius: { '4xl': '2.5rem' }
+                }
+            }
+        }
+    </script>
+    <style>
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Screen Transitions */
+        .screen-content { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Modal Animation */
+        .modal-animate { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        /* Notification Slide Down */
+        .notify-animate { animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Onboarding Card Transitions */
+        .card-enter { animation: cardIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .card-exit { animation: cardOut 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes cardIn { 
+            from { opacity: 0; transform: translateX(50px) scale(0.95); } 
+            to { opacity: 1; transform: translateX(0) scale(1); } 
+        }
+        @keyframes cardOut { 
+            from { opacity: 1; transform: translateX(0); } 
+            to { opacity: 0; transform: translateX(-50px); } 
+        }
+
+        body { background-color: #111827; -webkit-tap-highlight-color: transparent; }
+    </style>
+</head>
+<body class="bg-midnight font-sans text-text-main h-full overflow-hidden select-none">
+
+    <div class="flex flex-col h-full max-w-md mx-auto relative bg-midnight shadow-2xl overflow-hidden">
+
+        <!-- ================= AUTH SCREEN ================= -->
+        <div id="auth-screen" class="screen-content absolute inset-0 z-50 flex flex-col bg-midnight px-6 justify-center">
+            <!-- Decorative Elements -->
+            <div class="absolute top-0 right-0 w-64 h-64 bg-electric-cyan rounded-full opacity-10 blur-[80px]"></div>
+            
+            <div class="text-center mb-12 relative z-10">
+                <div class="w-20 h-20 bg-gradient-to-tr from-electric-cyan to-blue-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-glow transform rotate-6">
+                    <i class="fas fa-wallet text-white text-3xl"></i>
+                </div>
+                <h1 class="text-white text-4xl font-extrabold tracking-tight mb-2">DhanSetu</h1>
+                <p class="text-text-muted text-sm">Your Intelligent Financial Partner</p>
+            </div>
+
+            <div class="bg-midnight-light/50 backdrop-blur-md border border-gray-700 rounded-[2rem] p-8 shadow-xl">
+                <h2 class="text-white text-2xl font-bold mb-6">Welcome Back</h2>
+                <div class="space-y-5">
+                    <div>
+                        <label class="text-text-muted text-xs font-bold uppercase tracking-wider mb-2 block">Phone Number</label>
+                        <div class="flex items-center gap-3 bg-midnight border border-gray-600 rounded-2xl p-1 focus-within:border-electric-cyan transition-colors">
+                            <div class="w-16 h-12 rounded-xl flex items-center justify-center bg-gray-800">
+                                <span class="text-electric-cyan font-bold">+91</span>
+                            </div>
+                            <input type="tel" placeholder="Enter phone" class="flex-1 h-12 bg-transparent px-2 text-white outline-none placeholder-gray-600 font-medium">
+                        </div>
+                    </div>
+                    <button onclick="showScreen('onboarding')" class="w-full h-14 bg-electric-cyan text-midnight font-bold rounded-2xl shadow-glow hover:bg-cyan-400 transition-all active:scale-95">
+                        Send OTP
+                    </button>
+                    <button onclick="showScreen('home')" class="w-full h-12 text-text-muted font-semibold text-sm hover:text-white transition-colors">
+                        Continue as Guest
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= INTERACTIVE ONBOARDING SCREEN ================= -->
+        <div id="onboarding-screen" class="screen-content hidden absolute inset-0 z-50 bg-midnight flex flex-col">
+            <div class="px-6 pt-12 pb-6">
+                <!-- Dynamic Progress Bar -->
+                <div class="flex gap-2 mb-8">
+                    <div id="progress-1" class="h-1 flex-1 bg-electric-cyan rounded-full transition-colors"></div>
+                    <div id="progress-2" class="h-1 flex-1 bg-gray-700 rounded-full transition-colors"></div>
+                    <div id="progress-3" class="h-1 flex-1 bg-gray-700 rounded-full transition-colors"></div>
+                    <div id="progress-4" class="h-1 flex-1 bg-gray-700 rounded-full transition-colors"></div>
+                    <div id="progress-5" class="h-1 flex-1 bg-gray-700 rounded-full transition-colors"></div>
+                </div>
+                <h2 class="text-white text-3xl font-bold leading-tight" id="onboarding-question">How do you earn?</h2>
+            </div>
+
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] p-8 shadow-sheet flex flex-col relative overflow-hidden">
+                
+                <!-- STEP 1: Income Type -->
+                <div id="step-1" class="onboarding-card absolute inset-0 p-8 flex flex-col">
+                    <div class="space-y-3 flex-1">
+                        <button onclick="nextOnboarding(2)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm"><i class="fas fa-motorcycle text-xl"></i></div>
+                                <span class="text-text-main font-bold">Gig Worker</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-300 group-hover:text-electric-cyan"></i>
+                        </button>
+                        <button onclick="nextOnboarding(2)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm"><i class="fas fa-laptop text-xl"></i></div>
+                                <span class="text-text-main font-bold">Freelancer</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-300 group-hover:text-electric-cyan"></i>
+                        </button>
+                        <button onclick="nextOnboarding(2)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm"><i class="fas fa-building text-xl"></i></div>
+                                <span class="text-text-main font-bold">Salaried</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-300 group-hover:text-electric-cyan"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Primary App -->
+                <div id="step-2" class="onboarding-card absolute inset-0 p-8 flex flex-col hidden opacity-0">
+                    <div class="space-y-3 flex-1">
+                        <button onclick="nextOnboarding(3)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <span class="text-text-main font-bold text-lg">Swiggy</span>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-electric-cyan group-hover:bg-electric-cyan"></div>
+                        </button>
+                        <button onclick="nextOnboarding(3)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <span class="text-text-main font-bold text-lg">Zomato</span>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-electric-cyan group-hover:bg-electric-cyan"></div>
+                        </button>
+                        <button onclick="nextOnboarding(3)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <span class="text-text-main font-bold text-lg">Uber / Ola</span>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-electric-cyan group-hover:bg-electric-cyan"></div>
+                        </button>
+                        <button onclick="nextOnboarding(3)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center justify-between hover:bg-cyan-50 hover:border-electric-cyan border-2 border-transparent transition-all group">
+                            <span class="text-text-main font-bold text-lg">Rapido</span>
+                            <div class="w-6 h-6 rounded-full border-2 border-gray-300 group-hover:border-electric-cyan group-hover:bg-electric-cyan"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Monthly Target -->
+                <div id="step-3" class="onboarding-card absolute inset-0 p-8 flex flex-col hidden opacity-0">
+                    <div class="flex-1 flex flex-col justify-center">
+                        <div class="text-center mb-8">
+                            <span class="text-text-muted text-sm font-bold uppercase">Target Income</span>
+                            <h3 class="text-4xl font-extrabold text-text-main mt-2">₹ <span id="target-val">25,000</span></h3>
+                        </div>
+                        <input type="range" min="5000" max="100000" step="1000" value="25000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-electric-cyan mb-8" oninput="document.getElementById('target-val').innerText = parseInt(this.value).toLocaleString()">
+                        <button onclick="nextOnboarding(4)" class="w-full py-4 bg-midnight text-white font-bold rounded-2xl active:scale-95 transition-transform">
+                            Set Target
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Work Pattern -->
+                <div id="step-4" class="onboarding-card absolute inset-0 p-8 flex flex-col hidden opacity-0">
+                    <div class="space-y-3 flex-1">
+                        <button onclick="nextOnboarding(5)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-yellow-100 text-yellow-600 rounded-xl flex items-center justify-center"><i class="fas fa-sun"></i></div>
+                            <div class="text-left">
+                                <span class="block text-text-main font-bold">Morning Shifts</span>
+                                <span class="text-xs text-text-muted">6 AM - 2 PM</span>
+                            </div>
+                        </button>
+                        <button onclick="nextOnboarding(5)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center"><i class="fas fa-moon"></i></div>
+                            <div class="text-left">
+                                <span class="block text-text-main font-bold">Night Shifts</span>
+                                <span class="text-xs text-text-muted">6 PM - 2 AM</span>
+                            </div>
+                        </button>
+                        <button onclick="nextOnboarding(5)" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-green-100 text-green-600 rounded-xl flex items-center justify-center"><i class="fas fa-bolt"></i></div>
+                            <div class="text-left">
+                                <span class="block text-text-main font-bold">Weekends Only</span>
+                                <span class="text-xs text-text-muted">Sat - Sun</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STEP 5: Family -->
+                <div id="step-5" class="onboarding-card absolute inset-0 p-8 flex flex-col hidden opacity-0">
+                    <div class="space-y-3 flex-1">
+                        <button onclick="showScreen('home')" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-gray-200 text-gray-600 rounded-xl flex items-center justify-center"><i class="fas fa-user"></i></div>
+                            <span class="text-text-main font-bold">Just Me</span>
+                        </button>
+                        <button onclick="showScreen('home')" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center"><i class="fas fa-user-friends"></i></div>
+                            <span class="text-text-main font-bold">Me & Partner</span>
+                        </button>
+                        <button onclick="showScreen('home')" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-users"></i></div>
+                            <span class="text-text-main font-bold">Family with Kids</span>
+                        </button>
+                        <button onclick="showScreen('home')" class="w-full p-4 bg-surface-off rounded-2xl flex items-center gap-4 hover:bg-cyan-50 border-2 border-transparent hover:border-electric-cyan transition-all">
+                            <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center"><i class="fas fa-hands-helping"></i></div>
+                            <span class="text-text-main font-bold">Supporting Parents</span>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= HOME SCREEN ================= -->
+        <div id="home-screen" class="screen-content hidden h-full flex flex-col bg-midnight relative">
+            <!-- (Same as previous) -->
+            
+            <!-- Notification Overlay -->
+            <div id="notification-panel" class="absolute top-0 left-0 right-0 bg-surface-white z-40 p-6 pb-8 rounded-b-[2rem] shadow-xl hidden notify-animate">
+                <div class="flex justify-between items-center mb-4 pt-8">
+                    <h3 class="text-lg font-bold text-text-main">Notifications</h3>
+                    <button onclick="toggleNotifications()" class="text-text-muted hover:text-text-main"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3 p-3 bg-surface-off rounded-xl">
+                        <div class="w-8 h-8 bg-alert-red/10 text-alert-red rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-exclamation"></i></div>
+                        <div>
+                            <p class="text-sm font-bold text-text-main">Budget Exceeded</p>
+                            <p class="text-xs text-text-muted">You've crossed your dining budget by ₹500.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 p-3 bg-surface-off rounded-xl">
+                        <div class="w-8 h-8 bg-neon-mint/10 text-neon-mint rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-check"></i></div>
+                        <div>
+                            <p class="text-sm font-bold text-text-main">Goal Reached</p>
+                            <p class="text-xs text-text-muted">You saved ₹5,000 for Emergency Fund.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Section (Dark) -->
+            <div class="px-6 pt-10 pb-8 flex-shrink-0 bg-midnight relative z-10">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6">
+                    <div class="flex items-center gap-3" onclick="toggleProfileModal()">
+                        <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold border border-gray-600">P</div>
+                        <div>
+                            <p class="text-gray-400 text-xs">Good Morning</p>
+                            <h1 class="text-white text-sm font-bold"></h1>
+                        </div>
+                    </div>
+                    <button onclick="toggleNotifications()" class="w-10 h-10 bg-midnight-light rounded-full flex items-center justify-center text-white relative hover:bg-gray-800 transition-colors">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-2 right-3 w-2 h-2 bg-alert-red rounded-full"></span>
+                    </button>
+                </div>
+
+                <!-- Safe to Spend (Hero) -->
+                <div class="text-center mb-6">
+                    <p class="text-text-muted text-xs font-medium uppercase tracking-widest mb-1">Safe to Spend</p>
+                    <h1 class="text-5xl font-extrabold text-white tracking-tight">₹6,700</h1>
+                    
+                    <!-- Breakdown Pills -->
+                    <div class="flex justify-center gap-3 mt-4">
+                        <div class="px-4 py-1.5 bg-midnight-light rounded-full border border-gray-700 flex items-center gap-2">
+                            <span class="text-gray-400 text-[10px] uppercase">This Week</span>
+                            <span class="text-electric-cyan font-bold text-sm">₹6,700</span>
+                        </div>
+                        <div class="px-4 py-1.5 bg-midnight-light rounded-full border border-gray-700 flex items-center gap-2">
+                            <span class="text-gray-400 text-[10px] uppercase">Today</span>
+                            <span class="text-electric-cyan font-bold text-sm">₹1,200</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Sheet (Light) -->
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] shadow-sheet overflow-hidden relative z-20 flex flex-col">
+                <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mt-3 mb-1"></div>
+                
+                <div class="overflow-y-auto flex-1 px-6 pb-24 pt-4">
+                    
+                    <!-- Horizontal Alerts -->
+                    <div class="mb-6">
+                        <h3 class="text-text-main font-bold text-sm mb-3">Alerts & Reminders</h3>
+                        <div class="flex overflow-x-auto gap-3 pb-2 scrollbar-hide snap-x snap-mandatory">
+                            <!-- Alert 1 -->
+                            <div class="min-w-[260px] bg-surface-off rounded-3xl p-4 snap-center border border-gray-100">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-primary-indigo shadow-sm">
+                                        <i class="fas fa-exclamation-triangle text-alert-red"></i>
+                                    </div>
+                                    <span class="px-2 py-1 bg-red-100 text-alert-red text-[10px] font-bold rounded-md">Shortfall</span>
+                                </div>
+                                <h4 class="text-text-main font-bold text-sm">School Fees</h4>
+                                <p class="text-text-muted text-xs mt-1">You're ₹2,500 short this month.</p>
+                            </div>
+                            <!-- Alert 2 -->
+                            <div class="min-w-[260px] bg-midnight text-white rounded-3xl p-4 snap-center shadow-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center text-neon-mint">
+                                        <i class="fas fa-arrow-trend-up"></i>
+                                    </div>
+                                    <span class="px-2 py-1 bg-gray-700 text-neon-mint text-[10px] font-bold rounded-md">Good News</span>
+                                </div>
+                                <h4 class="font-bold text-sm">Income Spike</h4>
+                                <p class="text-gray-400 text-xs mt-1">Earnings are 30% higher!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions (Single Bar) -->
+                    <div class="mb-6">
+                        <div class="bg-surface-off rounded-3xl p-4 flex justify-between items-center">
+                            <button class="flex flex-col items-center gap-1 flex-1" onclick="toggleGoalModal()">
+                                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm">
+                                    <i class="fas fa-bullseye"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-text-main">Add Goal</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-1 flex-1" onclick="toggleLogCashModal()">
+                                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm">
+                                    <i class="fas fa-wallet"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-text-main">Log Cash</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-1 flex-1 opacity-50">
+                                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-gray-400 shadow-sm">
+                                    <i class="fas fa-link"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-text-main">Bank</span>
+                            </button>
+                            <button class="flex flex-col items-center gap-1 flex-1" onclick="showScreen('insights')">
+                                <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-electric-cyan shadow-sm">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                                <span class="text-[10px] font-bold text-text-main">Insights</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transactions -->
+                    <div>
+                        <h3 class="text-text-main font-bold text-sm mb-3">Recent Transactions</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between p-3 hover:bg-surface-off rounded-2xl transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+                                        <i class="fas fa-motorcycle"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-text-main">Swiggy Payout</p>
+                                        <button class="text-[10px] font-bold text-text-muted bg-gray-100 px-2 py-0.5 rounded-md mt-0.5 flex items-center gap-1 hover:bg-gray-200">
+                                            Earnings <i class="fas fa-chevron-down text-[8px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-neon-mint">+₹9,200</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 hover:bg-surface-off rounded-2xl transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-text-main">Grocery Shopping</p>
+                                        <button class="text-[10px] font-bold text-text-muted bg-gray-100 px-2 py-0.5 rounded-md mt-0.5 flex items-center gap-1 hover:bg-gray-200">
+                                            Food <i class="fas fa-chevron-down text-[8px]"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <span class="text-sm font-bold text-text-main">-₹1,450</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Goals Preview -->
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-text-main font-bold text-sm">Active Goals</h3>
+                            <span class="text-electric-cyan text-xs font-bold">View All</span>
+                        </div>
+                        <div class="bg-surface-off rounded-3xl p-4 border border-gray-100 relative">
+                            <span class="absolute top-4 right-4 bg-midnight text-white text-[8px] font-bold px-2 py-0.5 rounded-full">Priority #1</span>
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-electric-cyan shadow-sm">
+                                        <i class="fas fa-graduation-cap text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-text-main">School Fees</p>
+                                        <p class="text-[10px] text-text-muted">45 days left</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <div class="flex justify-between text-[10px] text-text-muted mb-1">
+                                    <span>₹45,000</span>
+                                    <span>Target: ₹120,000</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    <div class="bg-electric-cyan h-1.5 rounded-full" style="width: 37.5%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= GOALS, PORTFOLIO, INSIGHTS, CHATBOT (Included) ================= -->
+        <!-- NOTE: I am collapsing these for brevity as they are SAME as previous file, 
+             but they ARE included in the final output logic. -->
+        <div id="goals-screen" class="screen-content hidden h-full flex flex-col bg-midnight">
+             <!-- (Same content as previous version, no changes needed here) -->
+             <div class="px-6 pt-10 pb-6 flex-shrink-0 bg-midnight relative z-10">
+                <h1 class="text-white text-2xl font-bold mb-4">Goals</h1>
+                <div class="bg-midnight-light p-1 rounded-full flex">
+                    <button id="individual-tab" onclick="switchGoalsTab('individual')" class="flex-1 py-2 rounded-full text-sm font-bold text-midnight bg-electric-cyan shadow-glow transition-all">Individual</button>
+                    <button id="family-tab" onclick="switchGoalsTab('family')" class="flex-1 py-2 rounded-full text-sm font-bold text-text-muted hover:text-white transition-all">Family</button>
+                </div>
+            </div>
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] shadow-sheet overflow-hidden relative z-20 flex flex-col">
+                <div class="overflow-y-auto flex-1 px-6 pt-6 pb-24">
+                    <div id="individual-goals-content">
+                        <div class="bg-surface-off rounded-[2rem] p-6 mb-6 flex items-center justify-between">
+                            <div>
+                                <h3 class="font-bold text-lg text-text-main mb-1">Overview</h3>
+                                <div class="flex gap-3 mt-2">
+                                    <div class="text-center">
+                                        <span class="block text-xl font-bold text-electric-cyan">4</span>
+                                        <span class="text-[10px] text-text-muted font-bold uppercase">Active</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <span class="block text-xl font-bold text-neon-mint">1</span>
+                                        <span class="text-[10px] text-text-muted font-bold uppercase">Done</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="h-24 w-24 relative">
+                                <canvas id="goalsDonutChart"></canvas>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-xs font-bold text-text-muted">52%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- (4 Goals List Logic Here - SAME AS BEFORE) -->
+                         <h3 class="text-text-main font-bold text-sm mb-4 flex justify-between items-center">
+                            My Goals
+                            <button onclick="toggleGoalModal()" class="w-8 h-8 bg-midnight text-white rounded-full flex items-center justify-center shadow-lg"><i class="fas fa-plus text-xs"></i></button>
+                        </h3>
+                        <div class="space-y-4">
+                            <!-- Goal 1 -->
+                            <div class="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm relative overflow-hidden">
+                                <span class="absolute top-0 right-0 bg-electric-cyan text-midnight text-[9px] font-bold px-3 py-1 rounded-bl-xl">Priority #1</span>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-indigo-50 text-primary-indigo rounded-2xl flex items-center justify-center"><i class="fas fa-graduation-cap"></i></div>
+                                        <div><h4 class="font-bold text-sm text-text-main">School Fees</h4><p class="text-[10px] text-text-muted">Education • Due Nov 24</p></div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div class="bg-electric-cyan h-1.5 rounded-full" style="width: 37%"></div></div>
+                                <div class="flex justify-between mt-1.5"><span class="text-[10px] font-bold text-text-main">₹45,000</span><span class="text-[10px] text-text-muted">Target: ₹1.2L</span></div>
+                            </div>
+                            <!-- Goal 2 -->
+                            <div class="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm relative overflow-hidden">
+                                <span class="absolute top-0 right-0 bg-midnight-light text-gray-300 text-[9px] font-bold px-3 py-1 rounded-bl-xl">Priority #2</span>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center"><i class="fas fa-shield-alt"></i></div>
+                                        <div><h4 class="font-bold text-sm text-text-main">Emergency Fund</h4><p class="text-[10px] text-text-muted">Safety Net • Dec 24</p></div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div class="bg-electric-cyan h-1.5 rounded-full" style="width: 54%"></div></div>
+                                <div class="flex justify-between mt-1.5"><span class="text-[10px] font-bold text-text-main">₹82,000</span><span class="text-[10px] text-text-muted">Target: ₹1.5L</span></div>
+                            </div>
+                             <!-- Goal 3 -->
+                            <div class="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm relative overflow-hidden">
+                                <span class="absolute top-0 right-0 bg-gray-100 text-text-muted text-[9px] font-bold px-3 py-1 rounded-bl-xl">Priority #3</span>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center"><i class="fas fa-laptop"></i></div>
+                                        <div><h4 class="font-bold text-sm text-text-main">New Laptop</h4><p class="text-[10px] text-text-muted">Gadget • Jan 25</p></div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div class="bg-alert-yellow h-1.5 rounded-full" style="width: 10%"></div></div>
+                                <div class="flex justify-between mt-1.5"><span class="text-[10px] font-bold text-text-main">₹8,000</span><span class="text-[10px] text-text-muted">Target: ₹80k</span></div>
+                            </div>
+                             <!-- Goal 4 -->
+                            <div class="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm relative overflow-hidden">
+                                <span class="absolute top-0 right-0 bg-gray-100 text-text-muted text-[9px] font-bold px-3 py-1 rounded-bl-xl">Priority #4</span>
+                                <div class="flex justify-between items-start mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-yellow-50 text-yellow-500 rounded-2xl flex items-center justify-center"><i class="fas fa-home"></i></div>
+                                        <div><h4 class="font-bold text-sm text-text-main">Down Payment</h4><p class="text-[10px] text-text-muted">Property • Jun 26</p></div>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div class="bg-alert-yellow h-1.5 rounded-full" style="width: 25%"></div></div>
+                                <div class="flex justify-between mt-1.5"><span class="text-[10px] font-bold text-text-main">₹1.25L</span><span class="text-[10px] text-text-muted">Target: ₹5.0L</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="family-goals-content" class="hidden">
+                        <!-- Family stuff (same as before) -->
+                         <div class="bg-surface-off rounded-[2rem] p-6 mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-text-main">Kumar Family</h3>
+                                <div class="h-20 w-20 relative"><canvas id="familyGoalsDonut"></canvas></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-10 h-10 rounded-full bg-midnight text-white flex items-center justify-center text-sm font-bold border-2 border-white">P</div>
+                                <div class="w-10 h-10 rounded-full bg-electric-cyan text-midnight flex items-center justify-center text-sm font-bold border-2 border-white">S</div>
+                                <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center text-sm font-bold border-2 border-white">A</div>
+                                <button onclick="toggleInviteModal()" class="w-10 h-10 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <button onclick="toggleInviteModal()" class="w-full mt-4 py-2.5 bg-white text-electric-cyan font-bold text-sm rounded-xl shadow-sm">Invite Member</button>
+                        </div>
+                        <h3 class="text-text-main font-bold text-sm mb-4">Shared Goals</h3>
+                        <div class="bg-white border border-gray-100 p-5 rounded-3xl shadow-sm">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center"><i class="fas fa-plane"></i></div>
+                                    <div><h4 class="font-bold text-sm text-text-main">Family Vacation</h4><div class="flex items-center gap-1"><div class="w-4 h-4 rounded-full bg-midnight text-[8px] text-white flex items-center justify-center">P</div><div class="w-4 h-4 rounded-full bg-electric-cyan text-[8px] text-midnight flex items-center justify-center">S</div></div></div>
+                                </div>
+                                <span class="text-xs font-bold text-neon-mint">On Track</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2"><div class="bg-indigo-500 h-1.5 rounded-full" style="width: 65%"></div></div>
+                            <button onclick="toggleContributionModal()" class="w-full mt-4 text-xs font-bold text-electric-cyan uppercase tracking-wide">View Contributions</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="portfolio-screen" class="screen-content hidden h-full flex flex-col bg-midnight">
+             <!-- (Same content) -->
+             <div class="px-6 pt-10 pb-6 flex-shrink-0 bg-midnight relative z-10">
+                <h1 class="text-white text-2xl font-bold mb-1">Portfolio</h1>
+                <p class="text-electric-cyan text-sm font-medium mb-6">+3.5% Today <i class="fas fa-arrow-up"></i></p>
+                <div class="h-40 w-full"><canvas id="consistencyChart"></canvas></div>
+                <div class="flex justify-between mt-4 px-2">
+                    <button class="bg-midnight-light text-white text-[10px] font-bold px-3 py-1 rounded-lg border border-gray-600">1W</button>
+                    <button class="text-gray-500 text-[10px] font-bold px-3 py-1">1M</button>
+                    <button class="text-gray-500 text-[10px] font-bold px-3 py-1">3M</button>
+                    <button class="text-gray-500 text-[10px] font-bold px-3 py-1">1Y</button>
+                </div>
+            </div>
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] shadow-sheet overflow-hidden relative z-20 flex flex-col">
+                <div class="overflow-y-auto flex-1 px-6 pt-6 pb-24">
+                    <div class="bg-surface-off p-5 rounded-3xl mb-6 flex justify-between items-center">
+                        <div><p class="text-xs text-text-muted font-bold uppercase">Total Value</p><h2 class="text-2xl font-extrabold text-text-main">₹2,45,600</h2><p class="text-xs text-neon-mint font-bold mt-1">+₹8,450 Today</p></div>
+                        <div class="h-16 w-16"><canvas id="portfolioPieChart"></canvas></div>
+                    </div>
+                    <h3 class="text-text-main font-bold text-sm mb-3">Holdings</h3>
+                    <!-- (Holdings List same as before) -->
+                     <div class="space-y-3">
+                        <div class="flex items-center justify-between bg-white border border-gray-100 p-4 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center"><i class="fas fa-chart-line"></i></div><div><p class="text-sm font-bold text-text-main">Stocks</p><p class="text-[10px] text-text-muted">5 Holdings</p></div></div>
+                            <div class="text-right"><p class="text-sm font-bold text-text-main">₹61,400</p><p class="text-[10px] text-neon-mint">+2.8%</p></div>
+                        </div>
+                        <div class="flex items-center justify-between bg-white border border-gray-100 p-4 rounded-2xl shadow-sm">
+                            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center"><i class="fas fa-coins"></i></div><div><p class="text-sm font-bold text-text-main">Mutual Funds</p><p class="text-[10px] text-text-muted">8 Funds</p></div></div>
+                            <div class="text-right"><p class="text-sm font-bold text-text-main">₹1.59L</p><p class="text-[10px] text-neon-mint">+4.2%</p></div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-cyan-50 border border-cyan-100 p-4 rounded-2xl flex gap-3">
+                        <div class="w-8 h-8 bg-electric-cyan text-white rounded-full flex items-center justify-center flex-shrink-0"><i class="fas fa-lightbulb text-xs"></i></div>
+                        <div><h4 class="text-xs font-bold text-text-main">Market Insight</h4><p class="text-xs text-text-muted mt-1">Nifty is bullish. Consider increasing SIP amount.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="insights-screen" class="screen-content hidden h-full flex flex-col bg-midnight">
+             <!-- (Same content) -->
+             <div class="px-6 pt-12 pb-6 flex-shrink-0 relative z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="showScreen('home')" class="w-10 h-10 rounded-full bg-midnight-light flex items-center justify-center text-white hover:bg-gray-700 transition-colors shadow-glow"><i class="fas fa-arrow-left"></i></button>
+                    <div><h1 class="text-white text-2xl font-bold">Gig Insights</h1><p class="text-electric-cyan text-xs font-medium">Weekly Performance</p></div>
+                </div>
+            </div>
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] shadow-sheet overflow-hidden flex flex-col relative z-20">
+                <div class="overflow-y-auto flex-1 px-6 pt-8 pb-24">
+                    <!-- Safe to Spend -->
+                    <div class="mb-8">
+                        <div class="flex justify-between items-end mb-3"><h3 class="text-text-main font-bold text-sm uppercase tracking-wider">Safe to Spend</h3><span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">Live Estimate</span></div>
+                        <div class="bg-midnight p-6 rounded-[2rem] flex items-center justify-between shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-32 h-32 bg-electric-cyan opacity-10 rounded-full blur-2xl"></div>
+                            <div class="relative z-10"><p class="text-gray-400 text-xs mb-1">Daily Limit</p><h2 class="text-4xl font-extrabold text-electric-cyan">₹850</h2><div class="flex gap-2 mt-3"><span class="text-[10px] text-gray-300 bg-gray-800 px-2 py-1 rounded-md">Weekly: ₹5,950</span></div></div>
+                            <div class="text-right space-y-1 relative z-10 border-l border-gray-700 pl-4"><p class="text-[10px] text-gray-400">Income: <span class="text-white font-bold">₹25k</span></p><p class="text-[10px] text-gray-400">Fixed: <span class="text-alert-red font-bold">-₹12k</span></p><p class="text-[10px] text-gray-400">Goals: <span class="text-alert-yellow font-bold">-₹5k</span></p></div>
+                        </div>
+                    </div>
+                    <!-- Weekly Chart -->
+                    <div class="mb-8"><div class="flex justify-between items-end mb-3"><h3 class="text-text-main font-bold text-sm uppercase tracking-wider">Income Trend</h3><span class="text-neon-mint text-xs font-bold bg-green-50 px-2 py-1 rounded-lg">+12% vs last week</span></div><div class="h-56 w-full bg-white border border-gray-100 rounded-[2rem] p-4 shadow-sm"><canvas id="weeklyIncomeChart"></canvas></div></div>
+                    <!-- Alerts -->
+                    <div class="mb-8"><h3 class="text-text-main font-bold text-sm mb-3 uppercase tracking-wider">Spending Alerts</h3><div class="space-y-3"><div class="bg-red-50 p-4 rounded-2xl border border-red-100 flex gap-3 items-start"><div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-alert-red shadow-sm shrink-0 text-lg"><i class="fas fa-gas-pump"></i></div><div><p class="text-sm font-bold text-text-main">High Transport Cost</p><p class="text-xs text-text-muted mt-0.5 line-clamp-2"><span class="font-bold text-alert-red">+18% higher</span> this week. Check your fuel efficiency or routes.</p></div></div><div class="bg-surface-off p-4 rounded-2xl border border-gray-200 flex gap-3 items-start"><div class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-orange-500 shadow-sm shrink-0 text-lg"><i class="fas fa-utensils"></i></div><div><p class="text-sm font-bold text-text-main">Food Expenses</p><p class="text-xs text-text-muted mt-0.5">Increased by <span class="font-bold text-text-main">₹430</span> vs last week.</p></div></div></div></div>
+                    <!-- Pie -->
+                    <div class="mb-6"><h3 class="text-text-main font-bold text-sm mb-3 uppercase tracking-wider">Platform Earnings</h3><div class="bg-surface-off p-6 rounded-[2rem] border border-gray-100 flex items-center justify-between relative overflow-hidden"><div class="space-y-4 relative z-10"><div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full bg-[#FC8019]"></div><div><p class="text-xs font-bold text-text-main">Swiggy</p><p class="text-[10px] text-text-muted">₹15,000 (60%)</p></div></div><div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full bg-[#F9D342]"></div><div><p class="text-xs font-bold text-text-main">Rapido</p><p class="text-[10px] text-text-muted">₹7,500 (30%)</p></div></div><div class="flex items-center gap-3"><div class="w-3 h-3 rounded-full bg-[#482880]"></div><div><p class="text-xs font-bold text-text-main">Zepto</p><p class="text-[10px] text-text-muted">₹2,500 (10%)</p></div></div></div><div class="h-32 w-32 relative z-10"><canvas id="platformSplitChart"></canvas></div></div></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="chatbot-screen" class="screen-content hidden h-full flex flex-col bg-surface-white">
+             <!-- (Same content) -->
+             <div class="pt-12 pb-4 px-6 border-b border-gray-100 bg-white">
+                <h1 class="text-xl font-bold text-midnight">AI Coach</h1>
+                <p class="text-xs text-text-muted">Financial Assistant</p>
+            </div>
+            <div class="flex-1 overflow-y-auto px-6 py-6 space-y-6 pb-32">
+                <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-midnight flex items-center justify-center text-electric-cyan text-xs flex-shrink-0"><i class="fas fa-robot"></i></div><div class="max-w-[85%]"><div class="bg-surface-off p-4 rounded-2xl rounded-tl-none text-sm text-text-main shadow-sm">Hello Pradeep! Your spending is <span class="text-alert-red font-bold">12% higher</span> than last month. Optimize?</div><span class="text-[10px] text-text-muted ml-2">Just now</span></div></div>
+                <div class="flex gap-3 flex-row-reverse"><div class="w-8 h-8 rounded-full bg-electric-cyan text-midnight flex items-center justify-center text-xs font-bold flex-shrink-0">P</div><div class="max-w-[85%]"><div class="bg-midnight text-white p-4 rounded-2xl rounded-tr-none text-sm shadow-sm">Yes, please show me where I can save money.</div><span class="text-[10px] text-text-muted mr-2 block text-right">Just now</span></div></div>
+                <div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-midnight flex items-center justify-center text-electric-cyan text-xs flex-shrink-0"><i class="fas fa-robot"></i></div><div class="max-w-[85%]"><div class="bg-surface-off p-4 rounded-2xl rounded-tl-none shadow-sm"><p class="text-sm text-text-main mb-3">Spending breakdown: Food & Rent are high.</p><div class="h-40 bg-white rounded-xl p-2"><canvas id="chatSpendingChart"></canvas></div></div></div></div>
+                <div class="flex flex-wrap gap-2 pl-11"><button class="px-3 py-1.5 rounded-full border border-gray-200 text-xs font-bold text-text-muted hover:bg-gray-50">Predict Income</button><button class="px-3 py-1.5 rounded-full border border-electric-cyan text-xs font-bold text-cyan-700 bg-cyan-50">Optimize Savings</button></div>
+            </div>
+            <div class="absolute bottom-[90px] left-0 right-0 px-4"><div class="bg-white border border-gray-200 p-2 rounded-full shadow-floating flex items-center gap-2"><input type="text" placeholder="Ask anything..." class="flex-1 bg-transparent border-none focus:ring-0 text-sm px-4 text-text-main"><button class="w-10 h-10 bg-midnight rounded-full text-white flex items-center justify-center shadow-md active:scale-90 transition-transform"><i class="fas fa-paper-plane text-xs"></i></button></div></div>
+        </div>
+
+        <!-- ================= NEW SETTINGS SCREEN ================= -->
+        <div id="settings-screen" class="screen-content hidden h-full flex flex-col bg-midnight">
+            <div class="px-6 pt-12 pb-6 flex-shrink-0 relative z-10">
+                <h1 class="text-white text-2xl font-bold">Settings</h1>
+                <p class="text-text-muted text-sm">Manage your account</p>
+            </div>
+            <div class="flex-1 bg-surface-white rounded-t-[2.5rem] shadow-sheet overflow-hidden flex flex-col relative z-20">
+                <div class="overflow-y-auto flex-1 px-6 pt-8 pb-24">
+                    
+                    <!-- Profile Mini -->
+                    <div class="flex items-center gap-4 mb-8 p-4 bg-surface-off rounded-2xl border border-gray-100">
+                        <div class="w-14 h-14 bg-midnight text-white rounded-full flex items-center justify-center text-xl font-bold">P</div>
+                        <div>
+                            <h3 class="text-text-main font-bold text-lg">Pradeep Kumar</h3>
+                            <p class="text-text-muted text-sm">+91 98765 43210</p>
+                        </div>
+                        <button class="ml-auto text-electric-cyan text-sm font-bold">Edit</button>
+                    </div>
+
+                    <!-- Gig Integration -->
+                    <h3 class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3 pl-2">Gig Platforms</h3>
+                    <div class="space-y-1 mb-6">
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-orange-100 text-orange-600 rounded-lg flex items-center justify-center"><i class="fas fa-link"></i></div>
+                                <span class="text-sm font-bold text-text-main">Linked Accounts</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-neon-mint font-bold">3 Active</span>
+                                <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center"><i class="fas fa-sms"></i></div>
+                                <span class="text-sm font-bold text-text-main">SMS Detection</span>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                                <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-electric-cyan right-0"/>
+                                <label class="toggle-label block overflow-hidden h-5 rounded-full bg-electric-cyan cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Family -->
+                    <h3 class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3 pl-2">Family & Security</h3>
+                    <div class="space-y-1 mb-6">
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center"><i class="fas fa-users"></i></div>
+                                <span class="text-sm font-bold text-text-main">Manage Family</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center"><i class="fas fa-lock"></i></div>
+                                <span class="text-sm font-bold text-text-main">App Lock</span>
+                            </div>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                                <input type="checkbox" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300"/>
+                                <label class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- App -->
+                    <h3 class="text-xs font-bold text-text-muted uppercase tracking-wider mb-3 pl-2">Preferences</h3>
+                    <div class="space-y-1 mb-6">
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-green-100 text-green-600 rounded-lg flex items-center justify-center"><i class="fas fa-language"></i></div>
+                                <span class="text-sm font-bold text-text-main">Language</span>
+                            </div>
+                            <span class="text-xs text-text-muted font-bold">English</span>
+                        </div>
+                        <div class="p-4 flex items-center justify-between hover:bg-surface-off rounded-2xl transition-colors">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-lg flex items-center justify-center"><i class="fas fa-bell"></i></div>
+                                <span class="text-sm font-bold text-text-main">Notifications</span>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-300 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <button onclick="showScreen('auth')" class="w-full py-4 text-alert-red font-bold text-sm bg-red-50 rounded-2xl">Log Out</button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BOTTOM NAVIGATION ================= -->
+        <div id="bottom-nav" class="fixed bottom-6 left-6 right-6 bg-midnight text-white h-16 rounded-full shadow-floating z-50 flex items-center justify-around px-2 border border-gray-700/50 backdrop-blur-xl">
+            <button onclick="showScreen('home')" class="nav-btn active flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all" data-target="home">
+                <i class="fas fa-home text-lg mb-0.5"></i>
+            </button>
+            <button onclick="showScreen('goals')" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all text-gray-500 hover:text-electric-cyan" data-target="goals">
+                <i class="fas fa-bullseye text-lg mb-0.5"></i>
+            </button>
+            
+            <!-- Central Floating Action (Chat) -->
+            <button onclick="showScreen('chatbot')" class="floating-chat w-14 h-14 bg-electric-cyan text-midnight rounded-full -mt-10 border-4 border-midnight shadow-glow flex items-center justify-center text-xl transform active:scale-95 transition-all relative z-10">
+                <i class="fas fa-comment-dots"></i>
+            </button>
+
+            <button onclick="showScreen('portfolio')" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all text-gray-500 hover:text-electric-cyan" data-target="portfolio">
+                <i class="fas fa-chart-pie text-lg mb-0.5"></i>
+            </button>
+            <button onclick="showScreen('settings')" class="nav-btn flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all text-gray-500 hover:text-electric-cyan" data-target="settings">
+                <i class="fas fa-cog text-lg mb-0.5"></i>
+            </button>
+        </div>
+
+        <!-- ================= MODALS (Same as before) ================= -->
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleProfileModal()"></div>
+            <div class="relative w-full bg-surface-white rounded-t-[2.5rem] p-6 modal-animate pb-10">
+                <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-16 h-16 rounded-full bg-midnight text-white flex items-center justify-center text-2xl font-bold">P</div>
+                    <div>
+                        <h2 class="text-xl font-bold text-text-main">Pradeep Kumar</h2>
+                        <p class="text-text-muted">+91 98765 43210</p>
+                    </div>
+                </div>
+                <button class="w-full py-4 bg-surface-off rounded-2xl font-bold text-text-main mb-2">Edit Profile</button>
+                <button class="w-full py-4 bg-red-50 text-alert-red rounded-2xl font-bold" onclick="showScreen('auth'); toggleProfileModal()">Log Out</button>
+            </div>
+        </div>
+
+        <!-- Goal Modal -->
+        <div id="goal-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleGoalModal()"></div>
+            <div class="relative w-full bg-surface-white rounded-t-[2.5rem] p-6 modal-animate pb-8 h-[85vh] overflow-y-auto">
+                 <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                 <h2 class="text-2xl font-bold mb-6 text-text-main">Create Goal</h2>
+                 <div class="space-y-5">
+                     <div>
+                         <label class="text-xs font-bold text-text-muted uppercase">Name</label>
+                         <input type="text" class="w-full border-b-2 border-gray-100 py-2 focus:outline-none focus:border-electric-cyan font-bold text-lg bg-transparent text-text-main" placeholder="e.g. New Laptop">
+                     </div>
+                      <div>
+                         <label class="text-xs font-bold text-text-muted uppercase">Target Amount</label>
+                         <input type="number" class="w-full border-b-2 border-gray-100 py-2 focus:outline-none focus:border-electric-cyan font-bold text-lg bg-transparent text-text-main" placeholder="₹ 0">
+                     </div>
+                     <div>
+                         <label class="text-xs font-bold text-text-muted uppercase">Date</label>
+                         <input type="date" class="w-full border-b-2 border-gray-100 py-2 focus:outline-none focus:border-electric-cyan font-bold text-lg bg-transparent text-text-main text-gray-400">
+                     </div>
+                     <div>
+                         <label class="text-xs font-bold text-text-muted uppercase mb-2 block">Type</label>
+                         <div class="flex bg-surface-off p-1 rounded-xl">
+                             <button class="flex-1 py-2 rounded-lg bg-white text-midnight font-bold shadow-sm">Personal</button>
+                             <button class="flex-1 py-2 rounded-lg text-text-muted font-bold">Family</button>
+                         </div>
+                     </div>
+                     <div>
+                         <label class="text-xs font-bold text-text-muted uppercase mb-2 block">Priority</label>
+                         <select class="w-full bg-surface-off py-3 px-4 rounded-xl font-bold text-text-main outline-none">
+                             <option>1st Priority (Fills First)</option>
+                             <option>2nd Priority</option>
+                             <option>3rd Priority</option>
+                         </select>
+                     </div>
+                     <div class="grid grid-cols-2 gap-4 pt-4">
+                        <button class="py-4 bg-gray-100 text-text-main font-bold rounded-2xl" onclick="toggleGoalModal()">Cancel</button>
+                        <button class="py-4 bg-midnight text-white font-bold rounded-2xl shadow-lg" onclick="toggleGoalModal()">Create</button>
+                     </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Log Cash Modal -->
+        <div id="log-cash-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleLogCashModal()"></div>
+            <div class="relative w-full bg-surface-white rounded-t-[2.5rem] p-6 modal-animate pb-8">
+                 <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                 <h2 class="text-2xl font-bold mb-6 text-text-main">Log Cash</h2>
+                 <div class="space-y-5">
+                     <div class="flex bg-surface-off p-1 rounded-xl mb-4">
+                         <button class="flex-1 py-2 rounded-lg bg-white text-alert-red font-bold shadow-sm">Expense</button>
+                         <button class="flex-1 py-2 rounded-lg text-text-muted font-bold">Income</button>
+                     </div>
+                      <div>
+                         <label class="text-xs font-bold text-text-muted uppercase">Amount</label>
+                         <input type="number" class="w-full border-b-2 border-gray-100 py-2 focus:outline-none focus:border-electric-cyan font-bold text-3xl bg-transparent text-text-main" placeholder="₹ 0">
+                     </div>
+                     <div>
+                         <label class="text-xs font-bold text-text-muted uppercase mb-2 block">Category</label>
+                         <select class="w-full bg-surface-off py-3 px-4 rounded-xl font-bold text-text-main outline-none appearance-none">
+                             <option>Food & Dining</option>
+                             <option>Transport</option>
+                             <option>Shopping</option>
+                             <option>Bills</option>
+                         </select>
+                     </div>
+                     <button class="w-full py-4 bg-midnight text-white font-bold rounded-2xl shadow-lg mt-4" onclick="toggleLogCashModal()">Add Transaction</button>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Invite Modal -->
+        <div id="invite-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleInviteModal()"></div>
+            <div class="relative w-full bg-surface-white rounded-t-[2.5rem] p-6 modal-animate pb-8">
+                <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                <h2 class="text-2xl font-bold mb-2 text-text-main">Invite Member</h2>
+                <p class="text-sm text-text-muted mb-6">Share your financial goals.</p>
+                <input type="text" placeholder="Enter Code" class="w-full h-16 bg-surface-off rounded-2xl px-4 text-center text-2xl font-bold tracking-widest outline-none border-2 border-transparent focus:border-electric-cyan mb-6 text-text-main">
+                <button class="w-full h-14 bg-electric-cyan text-midnight font-bold rounded-2xl shadow-glow" onclick="toggleInviteModal()">Send Invite</button>
+            </div>
+        </div>
+
+        <!-- Contribution Modal -->
+        <div id="contribution-modal" class="hidden fixed inset-0 z-[60] flex items-end justify-center">
+            <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="toggleContributionModal()"></div>
+            <div class="relative w-full bg-surface-white rounded-t-[2.5rem] p-6 modal-animate pb-8">
+                <div class="w-12 h-1 bg-gray-200 rounded-full mx-auto mb-6"></div>
+                <h2 class="text-xl font-bold mb-6 text-text-main">Contributions</h2>
+                <div class="h-48 w-full mb-6">
+                    <canvas id="contributionChart"></canvas>
+                </div>
+                <div class="bg-surface-off p-4 rounded-2xl mb-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-bold text-text-main">Pradeep</span>
+                        <span class="text-sm font-bold text-electric-cyan">64%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-electric-cyan h-2 rounded-full" style="width: 64%"></div>
+                    </div>
+                </div>
+                <button class="w-full h-14 bg-midnight text-white font-bold rounded-2xl" onclick="toggleContributionModal()">Close</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        // --- Onboarding Logic (Swipe Style) ---
+        function nextOnboarding(step) {
+            // Visual Progress Bar Update
+            for(let i=1; i<=5; i++) {
+                const el = document.getElementById(`progress-${i}`);
+                if(i <= step) {
+                    el.classList.remove('bg-gray-700');
+                    el.classList.add('bg-electric-cyan');
+                } else {
+                    el.classList.add('bg-gray-700');
+                    el.classList.remove('bg-electric-cyan');
+                }
+            }
+
+            // Card Animation
+            const currentCard = document.getElementById(`step-${step-1}`);
+            const nextCard = document.getElementById(`step-${step}`);
+            
+            // Animate Out
+            if(currentCard) {
+                currentCard.classList.add('card-exit');
+                setTimeout(() => {
+                    currentCard.classList.add('hidden');
+                    currentCard.classList.remove('card-exit');
+                }, 400);
+            }
+
+            // Animate In
+            if(nextCard) {
+                nextCard.classList.remove('hidden');
+                nextCard.classList.add('card-enter');
+                setTimeout(() => {
+                    nextCard.classList.remove('card-enter');
+                    nextCard.classList.remove('opacity-0'); // Ensure visibility
+                }, 400);
+            }
+
+            // Update Header Question
+            const header = document.getElementById('onboarding-question');
+            const questions = [
+                "How do you earn?",
+                "Primary Platform?",
+                "Monthly Goal?",
+                "Shift Pattern?",
+                "Family Size?"
+            ];
+            if(step <= 5) header.innerText = questions[step-1];
+        }
+
+        // --- Navigation Logic ---
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(screenId + '-screen').classList.remove('hidden');
+
+            const nav = document.getElementById('bottom-nav');
+            if(['auth', 'onboarding', 'insights'].includes(screenId)) { 
+                nav.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+                const chatBtn = document.querySelector('.floating-chat');
+                // Hide floating chat button on chatbot AND settings screens
+                if(screenId === 'chatbot' || screenId === 'settings') {
+                    chatBtn.classList.add('scale-0'); 
+                } else {
+                    chatBtn.classList.remove('scale-0');
+                }
+            }
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                if(btn.dataset.target === screenId) {
+                    btn.classList.add('text-electric-cyan');
+                    btn.classList.remove('text-gray-500');
+                } else {
+                    btn.classList.remove('text-electric-cyan');
+                    btn.classList.add('text-gray-500');
+                }
+            });
+        }
+
+        // --- Modals Logic ---
+        function toggleProfileModal() { document.getElementById('profile-modal').classList.toggle('hidden'); }
+        function toggleGoalModal() { document.getElementById('goal-modal').classList.toggle('hidden'); }
+        function toggleInviteModal() { document.getElementById('invite-modal').classList.toggle('hidden'); }
+        function toggleContributionModal() { document.getElementById('contribution-modal').classList.toggle('hidden'); }
+        function toggleLogCashModal() { document.getElementById('log-cash-modal').classList.toggle('hidden'); }
+        function toggleNotifications() { document.getElementById('notification-panel').classList.toggle('hidden'); }
+
+        // --- Goals Tab Logic ---
+        function switchGoalsTab(tab) {
+            const indContent = document.getElementById('individual-goals-content');
+            const famContent = document.getElementById('family-goals-content');
+            const indBtn = document.getElementById('individual-tab');
+            const famBtn = document.getElementById('family-tab');
+            
+            if(tab === 'individual') {
+                indContent.classList.remove('hidden');
+                famContent.classList.add('hidden');
+                indBtn.classList.add('bg-electric-cyan', 'text-midnight', 'shadow-glow');
+                indBtn.classList.remove('text-text-muted');
+                famBtn.classList.remove('bg-electric-cyan', 'text-midnight', 'shadow-glow');
+                famBtn.classList.add('text-text-muted');
+            } else {
+                indContent.classList.add('hidden');
+                famContent.classList.remove('hidden');
+                famBtn.classList.add('bg-electric-cyan', 'text-midnight', 'shadow-glow');
+                famBtn.classList.remove('text-text-muted');
+                indBtn.classList.remove('bg-electric-cyan', 'text-midnight', 'shadow-glow');
+                indBtn.classList.add('text-text-muted');
+            }
+        }
+
+        // --- Initialize Charts with New Colors ---
+        document.addEventListener('DOMContentLoaded', () => {
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#9CA3AF';
+            Chart.defaults.scale.grid.display = false;
+
+            const chartColors = {
+                cyan: '#22D3EE',
+                mint: '#34D399',
+                purple: '#818CF8',
+                bg: '#F3F4F6',
+                dark: '#1F2937'
+            };
+
+            // 1. Goals Donut
+            new Chart(document.getElementById('goalsDonutChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Saved', 'Remaining'],
+                    datasets: [{
+                        data: [252000, 148000],
+                        backgroundColor: [chartColors.cyan, chartColors.bg],
+                        borderWidth: 0,
+                        borderRadius: 20,
+                        cutout: '85%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 2. Family Goals Donut
+            new Chart(document.getElementById('familyGoalsDonut'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Saved', 'Remaining'],
+                    datasets: [{
+                        data: [65000, 35000],
+                        backgroundColor: [chartColors.purple, chartColors.bg],
+                        borderWidth: 0,
+                        borderRadius: 20,
+                        cutout: '85%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 3. Contribution Bar Chart
+            new Chart(document.getElementById('contributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [
+                        { label: 'Pradeep', data: [5000, 6000, 7500, 8000, 7000, 8500], backgroundColor: chartColors.cyan, borderRadius: 4 },
+                        { label: 'Sneha', data: [3000, 3500, 4000, 4500, 3800, 4200], backgroundColor: chartColors.purple, borderRadius: 4 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+            });
+
+            // 4. Consistency Line Chart (Dark Theme Friendly)
+            const ctxLine = document.getElementById('consistencyChart').getContext('2d');
+            const gradient = ctxLine.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(34, 211, 238, 0.2)');
+            gradient.addColorStop(1, 'rgba(34, 211, 238, 0)');
+
+            new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+                    datasets: [{
+                        data: [1200, 1400, 1100, 1600, 1800, 1500, 1300],
+                        borderColor: chartColors.cyan,
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            });
+
+            // 5. Portfolio Pie
+            new Chart(document.getElementById('portfolioPieChart'), {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: [chartColors.cyan, chartColors.purple, chartColors.mint],
+                        borderWidth: 0,
+                        cutout: '70%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // 6. Chat Spending
+            new Chart(document.getElementById('chatSpendingChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Food', 'Rent', 'Travel'],
+                    datasets: [{
+                        data: [8450, 15000, 4800],
+                        backgroundColor: [chartColors.cyan, chartColors.purple, chartColors.mint],
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+            });
+
+            // 7. Weekly Income (Insights)
+            const ctxWeekly = document.getElementById('weeklyIncomeChart').getContext('2d');
+            const gradWeekly = ctxWeekly.createLinearGradient(0, 0, 0, 200);
+            gradWeekly.addColorStop(0, 'rgba(34, 211, 238, 0.4)');
+            gradWeekly.addColorStop(1, 'rgba(34, 211, 238, 0)');
+
+            new Chart(ctxWeekly, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Income',
+                        data: [4200, 4800, 3900, 5200],
+                        borderColor: chartColors.cyan,
+                        backgroundColor: gradWeekly,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#FFFFFF',
+                        pointBorderColor: chartColors.cyan,
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                        y: { border: { display: false }, grid: { color: '#f3f4f6' }, ticks: { callback: function(val) { return '₹' + val; }, font: { size: 10 } } }
+                    }
+                }
+            });
+
+            // 8. Platform Split (Insights)
+            new Chart(document.getElementById('platformSplitChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Swiggy', 'Rapido', 'Zepto'],
+                    datasets: [{
+                        data: [60, 30, 10],
+                        backgroundColor: ['#FC8019', '#F9D342', '#482880'],
+                        borderWidth: 0,
+                        cutout: '65%'
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Init
+            showScreen('auth');
+        });
+    </script>
+</body>
+</html>
